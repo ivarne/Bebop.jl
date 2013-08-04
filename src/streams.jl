@@ -56,12 +56,18 @@ function openStream(sampleRate::FloatingPoint, numChannels::Integer, dtype::Data
                sampleRate, numChannels, 1024, dtype)
 end
 
+function openStream(f::Function, args...)
+    stream = openStream(args...)
+    f(stream)
+    closeStream(stream)
+end
+
 function closeStream(stream::Stream)
     err = ccall((:Pa_CloseStream, portaudio), Int32, (PaStream,), stream.pastream)
     check_pa_error(err)
 end
 
-function withStream(f::Function, stream::Stream)
+function startStream(f::Function, stream::Stream)
     err = ccall((:Pa_StartStream, portaudio), Int32, (PaStream,), stream.pastream)
     check_pa_error(err)
     f()
@@ -74,7 +80,7 @@ function writeStream{T}(stream::Stream, data::Vector{T})
         error("Type mismatch: expected $(stream.dtype), got $T")
     end
     stride = stream.framesPerBuffer
-    withStream(stream) do
+    startStream(stream) do
         for i in 1:stride:endof(data)
             bufend = min(i + stride - 1,  endof(data))
             buffer = data[i:bufend]

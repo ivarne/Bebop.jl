@@ -9,7 +9,7 @@ const t = [1:duration * 44100] / sampRate
 const x = sin(2 * pi * musicFreq * t)
 
 Bebop.initialize() do
-    stream = Bebop.openStream(sampRate, 1, Float32)
-    Bebop.writeStream(stream, x)
-    Bebop.closeStream(stream)
+    Bebop.openStream(sampRate, 1, Float32) do stream
+        Bebop.writeStream(stream, x)
+    end
 end
