@@ -1,4 +1,4 @@
-export Stream, openStream, closeStream, writeStream
+export Stream, openStream, closeStream, writeStream, readStream
 
 const TypeToSampleFormat = {Float32 => 0x1, Int32 => 0x2, Int16 => 0x8, 
                             Int8 => 0x10, Uint8 => 0x20}
@@ -85,4 +85,23 @@ function writeStream{T}(stream::Stream, data::Array{T})
                     stream.pastream, data, length(data))
         check_pa_error(err)
     end
+end
+
+function readStream(stream::Stream, nframes::Integer)
+    println("Now recording. Speak clearly into the microphone.")
+    arr = (stream.channels == 1) ? 
+            Array(stream.dtype, nframes) : 
+            Array(stream.dtype, stream.channels, nframes)
+    startStream(stream) do
+        err = ccall((:Pa_ReadStream, portaudio), Int32, (PaStream, Ptr{Void}, Uint), 
+                    stream.pastream, arr, nframes)
+        check_pa_error(err)
+    end
+    println("Finished recording")
+    return arr
+end
+
+function readStream(stream::Stream, duration::FloatingPoint)
+    nframes = int(duration * stream.sampleRate)
+    return readStream(stream, nframes)
 end
