@@ -75,19 +75,14 @@ function startStream(f::Function, stream::Stream)
     check_pa_error(err)
 end
 
-function writeStream{T}(stream::Stream, data::Vector{T})
+function writeStream{T}(stream::Stream, data::Array{T})
     if stream.dtype != T
         error("Type mismatch: expected $(stream.dtype), got $T")
     end
-    stride = stream.framesPerBuffer
     startStream(stream) do
-        for i in 1:stride:endof(data)
-            bufend = min(i + stride - 1,  endof(data))
-            buffer = data[i:bufend]
-            err = ccall((:Pa_WriteStream, portaudio), Int32, 
-                        (PaStream, Ptr{Void}, Uint),
-                        stream.pastream, buffer, length(buffer))
-            check_pa_error(err)
-        end
+        err = ccall((:Pa_WriteStream, portaudio), Int32, 
+                    (PaStream, Ptr{Void}, Uint),
+                    stream.pastream, data, length(data))
+        check_pa_error(err)
     end
 end
