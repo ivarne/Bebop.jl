@@ -14,6 +14,9 @@ const xstereo = [xmono'; xmono']
 println(size(xstereo))
 
 initialize() do
+    openStream(sampRate, 1, Float32) do stream
+        writeStream(stream, xmono)
+    end
     openStream(sampRate, 2, Float32) do stream
         writeStream(stream, xstereo)
     end
