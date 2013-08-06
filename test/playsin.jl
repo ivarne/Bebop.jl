@@ -4,7 +4,8 @@ using Bebop
 const duration = 2
 
 const sampRate = 44100f0
-const musicFreq = 261.63
+# the A above middle C
+const musicFreq = 440.0
 
 const t = [1:duration * 44100] / sampRate
 const xmono = sin(2 * pi * musicFreq * t)
