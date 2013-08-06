@@ -82,7 +82,7 @@ function writeStream{T}(stream::Stream, data::Array{T})
     startStream(stream) do
         err = ccall((:Pa_WriteStream, portaudio), Int32, 
                     (PaStream, Ptr{Void}, Uint),
-                    stream.pastream, data, length(data))
+                    stream.pastream, data, length(data) / stream.channels)
         check_pa_error(err)
     end
 end
