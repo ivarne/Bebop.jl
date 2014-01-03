@@ -31,8 +31,8 @@ function OutputStreamParameters(device::Integer, numChannels::Integer,
 end
 
 
-function openStream(inputId::Integer, outputId::Integer, 
-                       sampleRate::FloatingPoint, numChannels::Integer, 
+function openStream(inputId::Integer, outputId::Integer,
+                       sampleRate::Integer, numChannels::Integer, 
                        framesPerBuffer::Integer, dtype::DataType)
     pastream = Array(PaStream, 1)
     inputParams = InputStreamParameters(inputId, numChannels, dtype)
@@ -51,7 +51,7 @@ function openStream(inputId::Integer, outputId::Integer,
                   dtype)
 end
 
-function openStream(sampleRate::FloatingPoint, numChannels::Integer, dtype::DataType)
+function openStream(sampleRate::Integer, numChannels::Integer, dtype::DataType)
     openStream(defaultInputDevice(), defaultOutputDevice(),
                sampleRate, numChannels, 1024, dtype)
 end
