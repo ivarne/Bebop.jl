@@ -1,6 +1,7 @@
 # Constants and types go here
 
 const portaudio = "libportaudio"
+const sndfile = "libsndfile"
 
 type DeviceInfo
     structVersion::Int32
@@ -24,3 +25,12 @@ type StreamParameters
 end
 
 typealias PaStream Ptr{Void}
+
+type SF_INFO
+    frames::Int64
+    samplerate::Int32
+    channels::Int32
+    format::Int32
+    sections::Int32
+    seekable::Int32
+end
