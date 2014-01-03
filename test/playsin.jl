@@ -7,8 +7,8 @@ const sampRate = 44100
 # the A above middle C
 const musicFreq = 440.0
 
-const t = [1:duration * 44100] / float32(sampRate)
-const xmono = sin(2 * pi * musicFreq * t)
+const t = [1:duration * sampRate] / sampRate
+const xmono = float32(sin(2 * pi * musicFreq * t))
 const xstereo = [xmono'; xmono']
 
 initialize() do
