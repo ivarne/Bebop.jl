@@ -10,7 +10,7 @@ end
 
 function openFile(path::String)
     sfinfo = SF_INFO(0, 0, 0, 0, 0, 0)
-    filePtr = ccall((:sf_open, sndfile), Ptr{Void}, 
+    filePtr = ccall((:sf_open, sndfile), Ptr{Void},
                     (Ptr{Uint8}, Int32, Ptr{SF_INFO}),
                     path, SFM_READ, &sfinfo)
     if filePtr == C_NULL

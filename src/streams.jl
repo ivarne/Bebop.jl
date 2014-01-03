@@ -1,6 +1,6 @@
 export Stream, openStream, closeStream, writeStream, readStream
 
-const TypeToSampleFormat = {Float32 => 0x1, Int32 => 0x2, Int16 => 0x8, 
+const TypeToSampleFormat = {Float32 => 0x1, Int32 => 0x2, Int16 => 0x8,
                             Int8 => 0x10, Uint8 => 0x20}
 
 type Stream
@@ -11,41 +11,41 @@ type Stream
     dtype::DataType
 end
 
-function InputStreamParameters(device::Integer, numChannels::Integer, 
+function InputStreamParameters(device::Integer, numChannels::Integer,
                                dtype::DataType)
     devinfo = DeviceInfo(device)
-    return StreamParameters(convert(Int32, device), convert(Int32, numChannels), 
+    return StreamParameters(convert(Int32, device), convert(Int32, numChannels),
                             convert(Uint, TypeToSampleFormat[dtype]),
-                            devinfo.defaultHighInputLatency, 
+                            devinfo.defaultHighInputLatency,
                             convert(Ptr{None}, C_NULL))
 end
 
-function OutputStreamParameters(device::Integer, numChannels::Integer, 
+function OutputStreamParameters(device::Integer, numChannels::Integer,
                                    dtype::DataType)
     devinfo = DeviceInfo(device)
-    return StreamParameters(convert(Int32, device), 
-                            convert(Int32, numChannels), 
+    return StreamParameters(convert(Int32, device),
+                            convert(Int32, numChannels),
                             convert(Uint, TypeToSampleFormat[dtype]),
-                            devinfo.defaultHighOutputLatency, 
+                            devinfo.defaultHighOutputLatency,
                             convert(Ptr{None}, C_NULL))
 end
 
 
 function openStream(inputId::Integer, outputId::Integer,
-                       sampleRate::Integer, numChannels::Integer, 
+                       sampleRate::Integer, numChannels::Integer,
                        framesPerBuffer::Integer, dtype::DataType)
     pastream = Array(PaStream, 1)
     inputParams = InputStreamParameters(inputId, numChannels, dtype)
     outputParams = OutputStreamParameters(outputId, numChannels, dtype)
 
-    err = ccall((:Pa_OpenStream, portaudio), Int32, 
+    err = ccall((:Pa_OpenStream, portaudio), Int32,
                 (Ptr{PaStream}, Ptr{StreamParameters}, Ptr{StreamParameters},
                  Float64, Uint, Uint, Ptr{Void}, Ptr{Void}),
-                pastream, &inputParams, &outputParams, 
+                pastream, &inputParams, &outputParams,
                 sampleRate, framesPerBuffer, 0, C_NULL, C_NULL)
     check_pa_error(err)
-    return Stream(pastream[], 
-                  convert(Int32, numChannels), 
+    return Stream(pastream[],
+                  convert(Int32, numChannels),
                   convert(Float64, sampleRate),
                   convert(Uint, framesPerBuffer),
                   dtype)
@@ -80,7 +80,7 @@ function writeStream{T}(stream::Stream, data::Array{T})
         error("Type mismatch: expected $(stream.dtype), got $T")
     end
     startStream(stream) do
-        err = ccall((:Pa_WriteStream, portaudio), Int32, 
+        err = ccall((:Pa_WriteStream, portaudio), Int32,
                     (PaStream, Ptr{Void}, Uint),
                     stream.pastream, data, length(data) / stream.channels)
         check_pa_error(err)
@@ -89,11 +89,11 @@ end
 
 function readStream(stream::Stream, nframes::Integer)
     println("Now recording. Speak clearly into the microphone.")
-    arr = (stream.channels == 1) ? 
-            Array(stream.dtype, nframes) : 
+    arr = (stream.channels == 1) ?
+            Array(stream.dtype, nframes) :
             Array(stream.dtype, stream.channels, nframes)
     startStream(stream) do
-        err = ccall((:Pa_ReadStream, portaudio), Int32, (PaStream, Ptr{Void}, Uint), 
+        err = ccall((:Pa_ReadStream, portaudio), Int32, (PaStream, Ptr{Void}, Uint),
                     stream.pastream, arr, nframes)
         check_pa_error(err)
     end
