@@ -6,5 +6,6 @@ include("setup.jl")
 include("device.jl")
 include("streams.jl")
 include("sndfile.jl")
+include("jam.jl")
 
 end # module Bebop
