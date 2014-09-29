@@ -17,7 +17,7 @@ function InputStreamParameters(device::Integer, numChannels::Integer,
     return StreamParameters(convert(Int32, device), convert(Int32, numChannels),
                             convert(Uint, TypeToSampleFormat[dtype]),
                             devinfo.defaultHighInputLatency,
-                            convert(Ptr{None}, C_NULL))
+                            convert(Ptr{Void}, C_NULL))
 end
 
 function OutputStreamParameters(device::Integer, numChannels::Integer,
@@ -27,7 +27,7 @@ function OutputStreamParameters(device::Integer, numChannels::Integer,
                             convert(Int32, numChannels),
                             convert(Uint, TypeToSampleFormat[dtype]),
                             devinfo.defaultHighOutputLatency,
-                            convert(Ptr{None}, C_NULL))
+                            convert(Ptr{Void}, C_NULL))
 end
 
 
